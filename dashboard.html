@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINsight - Orbital</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Three.js Import Map -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div class="dashboard-view">
+        
+        <!-- Top Left Greeting -->
+        <div class="user-greeting">
+            <h1 class="greeting-lead" id="greetingHeader">Welcome back</h1>
+            <p class="user-name" id="userNameLabel">Explorer</p>
+        </div>
+
+        <!-- Dynamic Speech Bubble Above Bot -->
+        <div class="bot-speech-bubble" id="speechBubble">
+            "Finny"
+        </div>
+
+        <!-- Three.js 3D Bot Container -->
+        <div id="bot-canvas-container"></div>
+
+        <!-- The Orbital Rings & Spending Nodes -->
+        <div class="orbit-system" id="orbitSystem">
+            <!-- Concentric orbit circles injected by JS -->
+        </div>
+
+    </div>
+
+    <!-- Category Pop-up Window -->
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="category-modal">
+            <h2 id="modalCategoryTitle" style="font-size: 1.8rem; margin-bottom: 5px;">Food</h2>
+            <p class="modal-stat">Spent: <strong id="modalSpent">₹0</strong></p>
+            <p class="modal-stat">Share of Budget: <strong id="modalShare">0%</strong></p>
+            <p class="modal-stat">Trend: <strong id="modalTrend">0% vs last month</strong></p>
+            
+            <button class="enter-btn" style="margin-top: 15px;" onclick="alert('Full transaction log opening...')">CHECK IN DETAIL</button>
+            <button class="close-btn" id="closeModalBtn">Close</button>
+        </div>
+    </div>
+
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html>
