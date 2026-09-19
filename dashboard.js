@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+
 // user profile
 const storedData = localStorage.getItem("fin_user");
 const appData = storedData ? JSON.parse(storedData) : {
@@ -86,20 +87,31 @@ window.addEventListener("resize", () => {
 });
 
 // orbit around bot
-const orbitContainer = document.getElementById("orbitSystem");
-if(orbitContainer) {
+// -------------------------------------------------------------
+// REUSABLE UI UPDATE FUNCTIONS
+// -------------------------------------------------------------
+
+// Function to calculate and draw the 3D Orbits
+function buildOrbits() {
+    const orbitContainer = document.getElementById("orbitSystem");
+    if (!orbitContainer) return;
+
+    // Clear existing orbits
+    orbitContainer.innerHTML = '';
+
     const expenses = appData.transactions.filter(t => t.type === 'expense');
     const values = expenses.map(t => t.amount);
     const maxSpend = Math.max(...values, 1);
     const minSpend = Math.min(...values, 0);
     const totalSpend = values.reduce((a, b) => a + b, 0);
 
-    const minRadius = 200; 
-    const maxRadius = 300; 
+    const minRadius = 300; 
+    const maxRadius = 350; 
 
     expenses.forEach((txn, index) => {
+        // Reverse calculation so highest spend is furthest away
         const normalized = (txn.amount - minSpend) / (maxSpend - minSpend || 1);
-        const radius = maxRadius + (normalized * (maxRadius - minRadius));
+        const radius = minRadius + (normalized * (maxRadius - minRadius));
 
         const angle = (index * (360 / expenses.length)) * (Math.PI / 180);
         const x = 400 + radius * Math.cos(angle);
@@ -125,6 +137,58 @@ if(orbitContainer) {
     });
 }
 
+// Function to rebuild the Analytics Doughnut Chart
+let expenseChart = null;
+function buildChart() {
+    const chartCanvas = document.getElementById('expenseDoughnut');
+    if (!chartCanvas) return;
+
+    const chartExpenses = appData.transactions.filter(t => t.type === 'expense');
+    const chartLabels = chartExpenses.map(t => t.category_name);
+    const chartValues = chartExpenses.map(t => t.amount);
+
+    // Destroy the old chart if it exists so we can draw a fresh one
+    if (expenseChart) {
+        expenseChart.destroy();
+    }
+
+    expenseChart = new Chart(chartCanvas, {
+        type: 'doughnut',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                data: chartValues,
+                backgroundColor: ['#00f2fe', '#fe0979', '#f8e71c', '#00ff87', '#bc13fe', '#ff5e00'],
+                borderWidth: 2,
+                borderColor: '#12121a', 
+                hoverOffset: 10 
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: { position: 'right', labels: { color: '#ffffff', padding: 20, font: { family: "'Space Grotesk', sans-serif", size: 12 } } },
+                tooltip: {
+                    backgroundColor: 'rgba(5, 5, 8, 0.9)', titleFont: { family: "'Space Grotesk', sans-serif", size: 14 },
+                    bodyFont: { family: "'Space Grotesk', sans-serif", size: 13, weight: 'bold' }, padding: 15, cornerRadius: 8, displayColors: false,
+                    callbacks: { label: function(context) { return ` ₹${context.parsed.toLocaleString()}`; } }
+                }
+            }
+        }
+    });
+}
+
+// Run these on initial load
+buildOrbits();
+buildChart();
+
+// -------------------------------------------------------------
+// EVENT LISTENERS & LOGIC
+// -------------------------------------------------------------
+
+// 1. Modal Updates & Bot Sliding
 const modalBackdrop = document.getElementById("modalBackdrop");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const speechBubble = document.getElementById("speechBubble");
@@ -140,23 +204,146 @@ function openModal(category, amount, share) {
 
     speechBubble.innerText = `Finny: "${category} accounts for ${share}% of your total outflow. Tap detail to review potential leaks."`;
     
-    // Slide bot smoothly to the right (positive X)
+    // Slides Bot to the right
     targetRobotX = 2.5; 
-    
-    // Blur the rings in the background
     if(orbitSystem) orbitSystem.classList.add("blur-target");
-    
     modalBackdrop.style.display = "flex";
 }
 
 if(closeModalBtn) {
     closeModalBtn.addEventListener("click", () => {
         modalBackdrop.style.display = "none";
-        
-        // Slide bot back to the center
+        // Slides Bot back to center
         targetRobotX = 0;
-        
-        // Unblur the rings
         if(orbitSystem) orbitSystem.classList.remove("blur-target");
+    });
+}
+
+// 2. HUD Navigation & Panel Sliding Logic
+const panels = document.querySelectorAll('.action-panel');
+const closeBtns = document.querySelectorAll('.close-panel-btn');
+
+function openPanel(panelId) {
+    panels.forEach(p => p.classList.remove('active'));
+    const targetPanel = document.getElementById(panelId);
+    if(targetPanel) targetPanel.classList.add('active');
+}
+
+document.getElementById('btnQuickAdd')?.addEventListener('click', () => openPanel('panelQuickAdd'));
+document.getElementById('btnAnalytics')?.addEventListener('click', () => openPanel('panelAnalytics'));
+document.getElementById('btnSavings')?.addEventListener('click', () => openPanel('panelSavings'));
+
+closeBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.target.closest('.action-panel').classList.remove('active');
+    });
+});
+
+// 3. NEW: Add Expense Logic
+const btnSubmitNewExpense = document.getElementById('submitNewExpense');
+const newExpCategory = document.getElementById('newExpCategory');
+const newExpAmount = document.getElementById('newExpAmount');
+
+if (btnSubmitNewExpense) {
+    btnSubmitNewExpense.addEventListener('click', () => {
+        const category = newExpCategory.value.trim();
+        const amount = parseFloat(newExpAmount.value);
+
+        if (!category || isNaN(amount) || amount <= 0) {
+            alert("Please enter a valid category and amount.");
+            return;
+        }
+
+        // Add the new transaction to our local appData object
+        appData.transactions.push({
+            category_name: category,
+            amount: amount,
+            type: "expense",
+            source_type: "manual_add",
+            date: new Date().toISOString().split('T')[0]
+        });
+
+        // Save the updated data back to the browser's vault
+        localStorage.setItem("fin_user", JSON.stringify(appData));
+
+        // Re-draw the Orbits and the Chart immediately!
+        buildOrbits();
+        buildChart();
+
+        // Clear the inputs and slide the panel away
+        newExpCategory.value = '';
+        newExpAmount.value = '';
+        document.getElementById('panelQuickAdd').classList.remove('active');
+        
+        // Bonus: Make Finny acknowledge it!
+        speechBubble.innerText = `Finny: "I've added ${category} to your orbit and updated your charts."`;
+    });
+}
+
+// 4. Future Savings Tracker Logic
+const saveReasonInput = document.getElementById('saveReason');
+const saveTargetInput = document.getElementById('saveTarget');
+const saveDateInput = document.getElementById('saveDate');
+const btnCreateGoal = document.getElementById('btnCreateGoal');
+const savingsProgressSection = document.getElementById('savingsProgressSection');
+const savingsStatusText = document.getElementById('savingsStatusText');
+const savingsFill = document.getElementById('savingsFill');
+const addSavingsAmount = document.getElementById('addSavingsAmount');
+const btnDepositSavings = document.getElementById('btnDepositSavings');
+
+let savingsData = JSON.parse(localStorage.getItem('fin_savings')) || null;
+
+function updateSavingsUI() {
+    if (!savingsData || !savingsProgressSection) return;
+
+    if (saveReasonInput) saveReasonInput.style.display = 'none';
+    if (saveTargetInput) saveTargetInput.style.display = 'none';
+    if (saveDateInput) saveDateInput.style.display = 'none';
+    if (btnCreateGoal) btnCreateGoal.style.display = 'none';
+    
+    savingsProgressSection.style.display = 'block';
+
+    const percentage = Math.min((savingsData.current / savingsData.target) * 100, 100).toFixed(1);
+    
+    savingsStatusText.innerHTML = `<span style="color: var(--neon-cyan); font-size: 1.1rem;">${savingsData.reason}</span><br>₹${savingsData.current.toLocaleString()} / ₹${savingsData.target.toLocaleString()} (${percentage}%)`;
+    savingsFill.style.width = `${percentage}%`;
+
+    if (savingsData.current >= savingsData.target) {
+        savingsStatusText.innerHTML += " <br><span style='color: var(--neon-green);'>🏆 Goal Reached!</span>";
+        savingsFill.style.background = "var(--neon-green)";
+        if(btnDepositSavings) btnDepositSavings.style.display = 'none';
+        if(addSavingsAmount) addSavingsAmount.style.display = 'none';
+    }
+}
+
+updateSavingsUI();
+
+if (btnCreateGoal) {
+    btnCreateGoal.addEventListener('click', () => {
+        const reason = saveReasonInput.value;
+        const target = parseFloat(saveTargetInput.value);
+        const date = saveDateInput.value;
+
+        if (!reason || isNaN(target) || target <= 0) {
+            alert("Please enter a valid reason and target amount.");
+            return;
+        }
+
+        savingsData = { reason: reason, target: target, date: date, current: 0 };
+        localStorage.setItem('fin_savings', JSON.stringify(savingsData));
+        updateSavingsUI();
+    });
+}
+
+if (btnDepositSavings) {
+    btnDepositSavings.addEventListener('click', () => {
+        const deposit = parseFloat(addSavingsAmount.value);
+        if (isNaN(deposit) || deposit <= 0) return; 
+
+        savingsData.current += deposit;
+        localStorage.setItem('fin_savings', JSON.stringify(savingsData));
+        
+        addSavingsAmount.value = ''; 
+        updateSavingsUI();
     });
 }
