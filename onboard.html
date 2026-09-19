@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINsight - Orbital Calibration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="onboard-container">
+        <h2 style="font-size: 2rem; margin-bottom: 10px;">Calibrate Your Orbit</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Let Finny parse your financial structure using plain language.</p>
+
+        <form id="onboardForm">
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" id="onboardName" class="cosmic-input" placeholder="e.g. Maya Patel" required>
+            </div>
+
+            <div class="form-group">
+                <label>Estimated Total Monthly Income (₹)</label>
+                <input type="number" id="onboardIncome" class="cosmic-input" placeholder="e.g. 75000" required>
+            </div>
+
+            <div class="form-group">
+                <label>Describe your spending in simple English</label>
+                <textarea id="onboardSentence" class="cosmic-textarea" rows="4" 
+                    placeholder="e.g., I spend 18000 on Food and groceries, around 8000 on Travel, 15000 on my Loan EMI, 6000 on Shopping, and 4000 on Miscellaneous." required></textarea>
+            </div>
+
+            <!-- This is where the extracted AI chips will appear -->
+            <div id="aiPreview" class="ai-chip-preview"></div>
+
+            <button type="submit" class="enter-btn" style="margin-top: 25px;">INITIALIZE HERO ORBIT →</button>
+        </form>
+    </div>
+
+    <script src="onboard.js"></script>
+</body>
+</html>
