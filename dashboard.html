@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINsight - Orbital</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Three.js Import Map -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div class="dashboard-view">
+        
+        <!-- Top Left Greeting -->
+        <div class="user-greeting">
+            <h1 class="greeting-lead" id="greetingHeader">Welcome back</h1>
+            <p class="user-name" id="userNameLabel">Explorer</p>
+        </div>
+
+        <!-- Dynamic Speech Bubble Above Bot -->
+        <div class="bot-speech-bubble" id="speechBubble">
+            "Finny"
+        </div>
+
+        <!-- Three.js 3D Bot Container -->
+        <div id="bot-canvas-container"></div>
+
+        <!-- The Orbital Rings & Spending Nodes -->
+        <div class="orbit-system" id="orbitSystem">
+            <!-- Concentric orbit circles injected by JS -->
+        </div>
+
+    </div>
+
+    <!-- Category Pop-up Window -->
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="category-modal">
+            <h2 id="modalCategoryTitle" style="font-size: 1.8rem; margin-bottom: 5px;">Food</h2>
+            <p class="modal-stat">Spent: <strong id="modalSpent">₹0</strong></p>
+            <p class="modal-stat">Share of Budget: <strong id="modalShare">0%</strong></p>
+            <p class="modal-stat">Trend: <strong id="modalTrend">0% vs last month</strong></p>
+            
+            <button class="enter-btn" style="margin-top: 15px;" onclick="alert('Full transaction log opening...')">CHECK IN DETAIL</button>
+            <button class="close-btn" id="closeModalBtn">Close</button>
+        </div>
+    </div>
+
+    <!-- Floating Navigation Dock -->
+<div class="glass-dock">
+    <button class="dock-btn" id="btnQuickAdd" title="Add Expense"><i class="ph ph-plus"></i></button>
+    <button class="dock-btn" id="btnAnalytics" title="Expense Chart"><i class="ph ph-chart-pie-slice"></i></button>
+    <button class="dock-btn" id="btnSavings" title="Savings Goals"><i class="ph ph-target"></i></button>
+</div>
+
+<!-- 1. Quick Add Expense Panel -->
+<div class="action-panel" id="panelQuickAdd">
+    <h3>Add New Expense</h3>
+    <input type="text" id="newExpCategory" class="cosmic-input" placeholder="Category (e.g. Coffee)">
+    <input type="number" id="newExpAmount" class="cosmic-input" placeholder="Amount (₹)">
+    <button id="submitNewExpense" class="enter-btn">Add to Orbit</button>
+    <button class="close-panel-btn">✕</button>
+</div>
+
+<!-- 2. Analytics Pie Chart Panel -->
+<div class="action-panel" id="panelAnalytics">
+    <h3>Expense Breakdown</h3>
+    <div class="chart-container">
+        <canvas id="expenseDoughnut"></canvas>
+    </div>
+    <button class="close-panel-btn">✕</button>
+</div>
+
+<!-- 3. Future Savings Target Panel -->
+<div class="action-panel" id="panelSavings">
+    <h3>Future Savings Goal</h3>
+    <input type="text" id="saveReason" class="cosmic-input" placeholder="What are you saving for?">
+    <input type="number" id="saveTarget" class="cosmic-input" placeholder="Target Amount (₹)">
+    <input type="date" id="saveDate" class="cosmic-input">
+    
+    <div class="progress-section" id="savingsProgressSection" style="display: none; margin-top: 20px;">
+        <p id="savingsStatusText">0% of ₹0 Target</p>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="savingsFill"></div>
+        </div>
+        <input type="number" id="addSavingsAmount" class="cosmic-input" placeholder="Add funds (₹)" style="margin-top: 10px;">
+        <button id="btnDepositSavings" class="enter-btn" style="background: var(--neon-green); color: black;">Deposit</button>
+    </div>
+
+    <button id="btnCreateGoal" class="enter-btn">Set Target</button>
+    <button class="close-panel-btn">✕</button>
+</div>
+
+<!--bottom left logo-->
+            <div class="mini-logo-corner">
+                <div class="bracket-top-left"></div>
+                FIN<strong>sight</strong>
+                <div class="bracket-bottom-right"></div>
+            </div>
+
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html>

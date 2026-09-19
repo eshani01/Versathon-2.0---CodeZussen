@@ -1,0 +1,597 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap');
+
+:root {
+    --bg-black: #050508;
+    --card-glass: rgba(18, 18, 26, 0.65);
+    --border-glass: rgba(255, 255, 255, 0.12);
+    --neon-cyan: #00f2fe;
+    --neon-magenta: #fe0979;
+    --neon-yellow: #f8e71c;
+    --neon-green: #00ff87;
+    --text-muted: #8e8e9f;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+body {
+    background-color: var(--bg-black);
+    color: #ffffff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* bg lines */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* login */
+.scroll-container {
+    height: 200vh;
+    position: relative;
+}
+
+.sticky-viewport {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Landing Section */
+.hero-landing {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Increased to 2.5 seconds for a slow, floating zoom */
+    transition: transform 2.5s ease-in-out, opacity 2.5s ease-in-out;
+    z-index: 10;
+}
+
+/* Bracket Logo Box */
+.logo-bracket-container {
+    position: relative;
+    padding: 30px 60px;
+}
+
+.brand-title {
+    font-size: 5rem;
+    font-weight: 300;
+    letter-spacing: 4px;
+}
+
+.brand-title strong {
+    font-weight: 700;
+}
+
+.caption-text {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* Sketched Outer Outlines */
+.bracket-top-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 70px;
+    height: 70px;
+    border-top: 4px solid var(--neon-cyan);
+    border-left: 4px solid var(--neon-green);
+    border-top-left-radius: 20px;
+    box-shadow: -4px -4px 15px rgba(0, 242, 254, 0.4);
+}
+
+.bracket-bottom-right {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 70px;
+    height: 70px;
+    border-bottom: 4px solid var(--neon-magenta);
+    border-right: 4px solid var(--neon-yellow);
+    border-bottom-right-radius: 20px;
+    box-shadow: 4px 4px 15px rgba(254, 9, 121, 0.4);
+}
+
+/* Mini Logo for corner display */
+.mini-logo-corner {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    font-size: 1.2rem;
+    padding: 10px 18px;
+    z-index: 15;
+}
+.mini-logo-corner .bracket-top-left { width: 15px; height: 15px; border-width: 2px; border-top-left-radius: 6px; }
+.mini-logo-corner .bracket-bottom-right { width: 15px; height: 15px; border-width: 2px; border-bottom-right-radius: 6px; }
+
+/* Frosted Glass Login Panel */
+.login-panel {
+    position: absolute;
+    width: 90%;
+    max-width: 440px;
+    background: var(--card-glass);
+    border: 1px solid var(--border-glass);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.9);
+    transition: opacity 2s ease, transform 2s ease;
+    z-index: 20;
+}
+
+.login-panel.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: scale(1);
+}
+
+.auth-tabs {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    margin-bottom: 35px;
+    border-bottom: 1px solid var(--border-glass);
+    padding-bottom: 12px;
+}
+
+.auth-tab {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: relative;
+    padding: 6px 14px;
+    transition: color 0.3s;
+}
+
+.auth-tab.active {
+    color: #fff;
+    font-weight: 600;
+}
+
+.auth-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -13px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+    border-radius: 3px;
+}
+
+.google-btn {
+    width: 100%;
+    background-color: #ffffff;
+    color: #1f1f1f;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.google-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+}
+
+.enter-btn {
+    width: 100%;
+    margin-top: 20px;
+    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: opacity 0.2s;
+}
+
+.enter-btn:hover {
+    opacity: 0.9;
+}
+
+/* onboarding */
+.onboard-container {
+    max-width: 650px;
+    margin: 80px auto;
+    padding: 40px;
+    background: var(--card-glass);
+    border: 1px solid var(--border-glass);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    z-index: 10;
+    position: relative;
+}
+
+.onboard-step { display: none; }
+.onboard-step.active { display: block; }
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+}
+
+.cosmic-input, .cosmic-textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-glass);
+    padding: 14px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+}
+
+.cosmic-input:focus, .cosmic-textarea:focus {
+    border-color: var(--neon-cyan);
+}
+
+.ai-chip-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.spend-chip {
+    background: rgba(0, 242, 254, 0.1);
+    border: 1px solid var(--neon-cyan);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+/* dashboard & bot */
+.dashboard-view {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Header Info */
+.user-greeting {
+    position: absolute;
+    top: 40px;
+    left: 50px;
+    z-index: 30;
+}
+
+.greeting-lead {
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #fff, var(--text-muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.user-name {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Three.js Canvas Container */
+#bot-canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Orbit Track Containers */
+.orbit-system {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 800px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.orbit-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
+.orbit-node {
+    pointer-events: all;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: rgba(18, 18, 26, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+}
+
+.orbit-node:hover {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.orbit-node .cat-name { font-weight: 600; font-size: 0.95rem; }
+.orbit-node .cat-amount { font-size: 0.8rem; color: var(--text-muted); margin-left: 4px; }
+
+/* Speech Bubble Above Bot */
+.bot-speech-bubble {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card-glass);
+    border: 1px solid var(--border-glass);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    padding: 15px 24px;
+    z-index: 25;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    pointer-events: none;
+}
+
+.bot-speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 10px 0 10px;
+    border-style: solid;
+    border-color: rgba(18, 18, 26, 0.85) transparent transparent transparent;
+}
+
+/* Category Detail Popup Window */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(5, 5, 8, 0.7);
+    backdrop-filter: blur(15px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.category-modal {
+    background: var(--card-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 24px;
+    padding: 35px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+}
+
+.modal-stat {
+    margin: 15px 0;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+.modal-stat strong {
+    color: #fff;
+    font-size: 1.3rem;
+}
+
+.close-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+/* Align the pop-up window to the left side */
+.modal-backdrop {
+    justify-content: flex-start !important;
+    padding-left: 10%;
+}
+
+/* Align the pop-up window to the left side */
+.modal-backdrop {
+    justify-content: flex-start !important;
+    padding-left: 10%;
+    /* Remove the global blur so the bot stays sharp */
+    backdrop-filter: none !important;
+    background-color: rgba(5, 5, 8, 0.85) !important;
+    z-index: 100;
+}
+
+/* We will apply this blur ONLY to the orbits and text in the background */
+.blur-target {
+    filter: blur(10px);
+    transition: filter 0.3s ease;
+}
+
+/* Ensure the 3D canvas never blocks your mouse clicks */
+#bot-canvas-container {
+    pointer-events: none;
+    z-index: 105; 
+}
+
+/* Pulls the rings and clickable categories in front of the 3D bot */
+#orbitSystem {
+    position: relative;
+    z-index: 999; 
+}
+
+#speechBubble {
+    position: relative;
+    z-index: 105; /* Pulls the text out of the dark tint */
+    width: fit-content !important; 
+    max-width: 80%; 
+    margin: 0 auto;
+}
+
+/* Floating Navigation Dock */
+.glass-dock {
+    position: fixed;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--card-glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    border-radius: 30px;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 100;
+}
+
+.dock-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, text-shadow 0.2s;
+}
+
+.dock-btn:hover {
+    transform: scale(1.2);
+    text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+/* Sliding Action Panels */
+.action-panel {
+    position: fixed;
+    left: -400px; /* Hidden off-screen by default */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 350px;
+    background: var(--card-glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 30px;
+    z-index: 90;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-panel.active {
+    left: 100px; /* Slides in next to the dock */
+}
+
+.action-panel h3 {
+    margin-bottom: 20px;
+    color: var(--neon-cyan);
+}
+
+.close-panel-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.close-panel-btn:hover { color: white; }
+
+/* Progress Bar for Savings */
+.progress-bar-bg {
+    width: 100%;
+    height: 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
+    transition: width 0.5s ease;
+}
+
+.chart-container {
+    width: 100%;
+    height: 250px;
+}
