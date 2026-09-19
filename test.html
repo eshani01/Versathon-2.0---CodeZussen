@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Cursor Tracking Bot</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0a0a0a; /* Dark theme */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-family: system-ui, sans-serif;
+        }
+        
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .overlay-text {
+            position: absolute;
+            z-index: 2;
+            pointer-events: none; /* Lets the mouse click "through" the text */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay-text">
+        <h1 style="font-size: 3rem; margin-bottom: 0;">FinSight <span style="color: #00ffcc;">AI</span></h1>
+        <p></p>
+    </div>
+
+    
+    <div id="canvas-container"></div>
+
+    <!-- Import Maps to load Three.js directly in the browser -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.z = 10; // size of bot
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); // alpha: true makes background transparent
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Keeps it crisp
+        container.appendChild(renderer.domElement);
+
+        
+        const ambientLight = new THREE.AmbientLight(0xffffff, 2);
+        scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+
+        // load the 3D Model
+        let robot;
+        const loader = new GLTFLoader();
+        
+        // bot link
+        loader.load('./my-bot.glb', function(gltf) {
+            robot = gltf.scene;
+            robot.position.y = -2.5; // position of bot (to go down)
+            robot.scale.set(1, 1, 1);
+            scene.add(robot);
+        });
+
+        
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        const windowHalfX = window.innerWidth / 2; 
+        const windowHalfY = window.innerHeight / 3; 
+
+        document.addEventListener('mousemove', (event) => {
+            // Normalize mouse coordinates
+            mouseX = (event.clientX - windowHalfX);
+            mouseY = (event.clientY - windowHalfY);
+        });
+
+        // animation
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (robot) {
+                // Calculate target rotation based on mouse position
+                targetX = (mouseX * 0.001) + (Math.PI/2); // Sensitivity for X axis
+                targetY = mouseY * 0.001 ; // Sensitivity for Y axis
+
+                // Lerp current rotation to target rotation
+                robot.rotation.y += 0.05 * (targetX - robot.rotation.y);
+                robot.rotation.x += 0.05 * (targetY - robot.rotation.x);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
