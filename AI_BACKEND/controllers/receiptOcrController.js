@@ -32,8 +32,8 @@ exports.processReceipt = async (req, res) => {
 
         // C. Save it to the REAL Database!
         const savedTransaction = await createTransaction(
-            1,                          // Hardcoded user ID 1 (matches the test user in our SQL)
-            finalCategoryId,            // The mapped integer ID (1-7)
+            req.body.userId,            // <-- CHANGED: Now uses the REAL logged-in user!
+            finalCategoryId,          // The mapped integer ID (1-7)
             aiData.amount,              // Extracted amount
             aiData.transaction_type,    // 'expense'
             `${aiData.merchant}: ${aiData.description}`, // Combined description
