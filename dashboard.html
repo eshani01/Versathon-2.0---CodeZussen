@@ -101,6 +101,34 @@
     <button class="close-panel-btn">✕</button>
 </div>
 
+<!-- Smart Receipt Scanner UI -->
+<div id="receipt-scanner-container" style="border: 2px dashed #ccc; padding: 20px; border-radius: 10px; margin-top: 20px; max-width: 400px;">
+    <h3>📷 AI Receipt Scanner</h3>
+    
+    <input type="file" id="receipt-input" accept="image/*" style="margin-bottom: 15px;" />
+
+    <div id="preview-container" style="display: none; margin-bottom: 15px;">
+        <img id="receipt-preview" style="max-height: 150px; border-radius: 8px;" alt="Receipt Preview" />
+    </div>
+
+    <button id="scan-btn" disabled style="display: block; width: 100%; padding: 10px; background: #ccc; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+        Extract Data
+    </button>
+
+    <p id="scan-error" style="color: red; display: none; margin-top: 10px;"></p>
+
+    <div id="scan-results" style="display: none; margin-top: 15px; padding: 15px; background: #f0fdf4; border-left: 4px solid #4CAF50; border-radius: 4px;">
+        <h4 style="margin-top: 0;">✅ Receipt Processed!</h4>
+        <p><strong>Merchant:</strong> <span id="res-merchant"></span></p>
+        <p><strong>Amount:</strong> ₹<span id="res-amount"></span></p>
+        <p><strong>Category:</strong> <span id="res-category"></span></p>
+        <p><strong>Date:</strong> <span id="res-date"></span></p>
+    </div>
+</div>
+
+<!-- Make sure your script is linked at the bottom of the body! -->
+<script src="receiptScanner.js"></script>
+
 <!--bottom left logo-->
             <div class="mini-logo-corner">
                 <div class="bracket-top-left"></div>
